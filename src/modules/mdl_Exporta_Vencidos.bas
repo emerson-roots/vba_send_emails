@@ -1,4 +1,4 @@
-Attribute VB_Name = "mdl_Gera_Exporta_Workbook"
+Attribute VB_Name = "mdl_Exporta_Vencidos"
 Option Explicit
 
 Public objExcel As Excel.Application

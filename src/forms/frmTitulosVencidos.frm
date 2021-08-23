@@ -174,6 +174,78 @@ Private Sub btnImportarDados_Click()
     End If
 End Sub
 
+Private Sub btnInserirEmail_Click()
+    
+    Dim email As String
+    
+    If lstTitulosVencidos.ListItems.Count <= 0 Then
+        MsgBox "Impossivel prosseguir. Não existem itens na lista. Importe dados para a lista para poder manipular e-mails.", vbCritical
+        Exit Sub
+    ElseIf lstTitulosVencidos.SelectedItem Is Nothing Then
+        MsgBox "Selecione um item para inserir/alterar e-mail", vbExclamation
+        Exit Sub
+    Else
+        Dim adm As String
+        email = InputBox("Digite um e-mail válido...")
+        adm = lstTitulosVencidos.ListItems.Item(lstTitulosVencidos.SelectedItem.Index).ListSubItems(5)
+        
+        If emailIsValid(email) Then
+            Call alteraEmailPorAdministradora(email, adm)
+        Else
+            MsgBox "O e-mail não é válido.", vbCritical
+        End If
+    End If
+    
+    
+End Sub
+
+Function emailIsValid(pEmail As String) As Boolean
+
+    If InStr(1, pEmail, "@", 1) = 0 Or InStr(1, pEmail, ".", 1) = 0 Then
+        emailIsValid = False
+    Else
+        emailIsValid = True
+    End If
+    
+End Function
+
+Function admIsValid(pAdm As String) As Boolean
+
+    If InStr(1, pAdm, "null -", 1) <> 0 Then
+        admIsValid = False
+    Else
+        admIsValid = True
+    End If
+    
+End Function
+
+Sub alteraEmailPorAdministradora(pEmail As String, pAdm As String)
+
+    Dim indexItemSelecionado As Integer
+    Dim qtdItensNaLista As Integer
+    Dim i As Integer
+    Dim adm As String
+    
+    
+    qtdItensNaLista = lstTitulosVencidos.ListItems.Count
+    indexItemSelecionado = lstTitulosVencidos.SelectedItem.Index
+    
+    
+    For i = 1 To qtdItensNaLista
+        
+        adm = lstTitulosVencidos.ListItems.Item(i).ListSubItems(5)
+        
+        If adm = pAdm Then
+            lstTitulosVencidos.ListItems.Item(i).SubItems(6) = pEmail
+        End If
+        
+    Next i
+    
+
+
+
+End Sub
+
 Private Sub lstTitulosVencidos_BeforeLabelEdit(Cancel As Integer)
     Cancel = 1
 End Sub
@@ -236,7 +308,7 @@ Dim ultimaColuna As Long
 Dim ultimaLinha As Long
 Dim i, y As Long
 
-caminho = caixaDialogoEscolherArquivoXlsx
+caminho = caixaDialogoEscolherArquivoExcel
 
     'caminho em branco aborta a rotina ou arquivo nao selecionado
     If caminho = "" Then
@@ -278,7 +350,7 @@ importaDadosDeArquivoExcelParaArray = dados
     
 
 End Function
-Function caixaDialogoEscolherArquivoXlsx() As String
+Function caixaDialogoEscolherArquivoExcel() As String
 
    Dim caixaDialogo As FileDialog
    Dim verificaBotaoApertadoCaixaDialogo As Integer
@@ -288,7 +360,7 @@ Function caixaDialogoEscolherArquivoXlsx() As String
      
      With caixaDialogo
         .Filters.Clear
-        .Filters.Add "Planilha títulos vencidos", "*.xlsx"
+        .Filters.Add "Planilha títulos vencidos", "*.xlsm"
         .ButtonName = "Selecionar Planilha"
         .InitialFileName = ""
         .Title = "Selecione a planilha com relatório de títulos vencidos"
@@ -305,10 +377,35 @@ Function caixaDialogoEscolherArquivoXlsx() As String
             arquivoSelecionado = caixaDialogo.SelectedItems.Item(1)
         End If
         
-        caixaDialogoEscolherArquivoXlsx = arquivoSelecionado
+        caixaDialogoEscolherArquivoExcel = arquivoSelecionado
         
      End With
 End Function
+
+Private Sub lstTitulosVencidos_ItemClick(ByVal Item As MSComctlLib.ListItem)
+    
+    Dim indexItemSelecionado As Integer
+    Dim adm As String
+    Dim email As String
+
+    indexItemSelecionado = lstTitulosVencidos.SelectedItem.Index
+    
+    email = lstTitulosVencidos.ListItems.Item(indexItemSelecionado).ListSubItems(6)
+    adm = lstTitulosVencidos.ListItems.Item(indexItemSelecionado).ListSubItems(5)
+    
+    If emailIsValid(email) = False Then
+        btnInserirEmail.Enabled = False
+    Else
+        btnInserirEmail.Enabled = True
+    End If
+    
+    If admIsValid(adm) = False Then
+        btnInserirEmail.Enabled = False
+    Else
+        btnInserirEmail.Enabled = True
+    End If
+    
+End Sub
 
 Private Sub UserForm_Initialize()
     

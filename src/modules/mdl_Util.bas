@@ -1,6 +1,6 @@
 Attribute VB_Name = "mdl_Util"
 Option Explicit
-Const cSenhaPlanilhas = 136479
+Public Const cSenhaPlanilhas = 136479
 Sub imprimirArrayNoConsole(pArray() As Variant)
     Dim y, z As Long
     Dim texto As String
